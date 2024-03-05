@@ -106,6 +106,9 @@ pub use crate::compute::{
 pub use crate::style::Style;
 #[doc(inline)]
 pub use crate::tree::traits::*;
+#[doc(inline)]
+#[cfg(feature = "inspect")]
+pub use crate::tree::LayoutInspect;
 #[cfg(feature = "taffy_tree")]
 #[doc(inline)]
 pub use crate::tree::TaffyTree;

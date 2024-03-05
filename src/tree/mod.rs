@@ -15,6 +15,9 @@ pub use node::NodeId;
 pub(crate) use traits::LayoutPartialTreeExt;
 pub use traits::{LayoutPartialTree, PrintTree, RoundTree, TraversePartialTree, TraverseTree};
 
+#[cfg(feature = "inspect")]
+pub use layout::LayoutInspect;
+
 #[cfg(feature = "taffy_tree")]
 mod taffy_tree;
 #[cfg(feature = "taffy_tree")]

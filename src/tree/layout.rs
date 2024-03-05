@@ -1,9 +1,12 @@
 //! Final data structures that represent the high-level UI layout
+#[cfg(feature = "grid")]
 use crate::compute::grid::GridTrack;
 use crate::geometry::{AbsoluteAxis, Line, Point, Rect, Size};
 use crate::style::AvailableSpace;
 use crate::style_helpers::TaffyMaxContent;
-use crate::util::sys::{f32_max, f32_min, GridTrackVec};
+#[cfg(feature = "grid")]
+use crate::util::sys::GridTrackVec;
+use crate::util::sys::{f32_max, f32_min};
 
 /// Whether we are performing a full layout, or we merely need to size the node
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -239,6 +242,7 @@ impl LayoutOutput {
     }
 
     /// Add grid inspection data
+    #[cfg(feature = "grid")]
     #[allow(unused_variables, unused_mut)]
     pub(crate) fn add_grid_inspect_data(
         mut self,
@@ -254,7 +258,7 @@ impl LayoutOutput {
 }
 
 /// Convert a GridTrackVec to an array of sizes
-#[cfg(feature = "inspect")]
+#[cfg(all(feature = "inspect", feature = "grid"))]
 fn to_sizes(vec: &GridTrackVec<GridTrack>) -> [f32; 10] {
     let mut sizes = [f32::MAX; LayoutInspect::MAX_LANES];
     for (i, track) in vec.iter().take(LayoutInspect::MAX_LANES).enumerate() {

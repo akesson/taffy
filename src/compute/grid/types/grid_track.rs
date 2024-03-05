@@ -6,7 +6,7 @@ use crate::{
 
 /// Whether a GridTrack represents an actual track or a gutter.
 #[derive(Copy, Clone, Debug, PartialEq)]
-pub(in super::super) enum GridTrackKind {
+pub(crate) enum GridTrackKind {
     /// Track is an actual track
     Track,
     /// Track is a gutter (aka grid line) (aka gap)
@@ -17,7 +17,7 @@ pub(in super::super) enum GridTrackKind {
 /// Gutters between tracks are sized similarly to actual tracks, so they
 /// are also represented by this struct
 #[derive(Debug, Clone)]
-pub(in super::super) struct GridTrack {
+pub(crate) struct GridTrack {
     #[allow(dead_code)] // Used in tests + may be useful in future
     /// Whether the track is a full track, a gutter, or a placeholder that has not yet been initialised
     pub kind: GridTrackKind,

@@ -252,6 +252,8 @@ fn compute_inner(tree: &mut impl LayoutPartialTree, node_id: NodeId, inputs: Lay
             CollapsibleMarginSet::from_margin(margin_bottom)
         },
         margins_can_collapse_through: can_be_collapsed_through,
+        #[cfg(feature = "inspect")]
+        inspect: None,
     }
 }
 

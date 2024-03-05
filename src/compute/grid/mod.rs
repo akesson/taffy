@@ -17,9 +17,9 @@ use placement::place_grid_items;
 use track_sizing::{
     determine_if_item_crosses_flexible_or_intrinsic_tracks, resolve_item_track_indexes, track_sizing_algorithm,
 };
-use types::{CellOccupancyMatrix, GridTrack};
+use types::CellOccupancyMatrix;
 
-pub(crate) use types::{GridCoordinate, GridLine, OriginZeroLine};
+pub(crate) use types::{GridCoordinate, GridLine, GridTrack, OriginZeroLine};
 
 mod alignment;
 mod explicit_grid;
@@ -229,7 +229,7 @@ pub fn compute_grid_layout(tree: &mut impl LayoutPartialTree, node: NodeId, inpu
 
     // If only the container's size has been requested
     if run_mode == RunMode::ComputeSize {
-        return LayoutOutput::from_outer_size(container_border_box);
+        return LayoutOutput::from_outer_size(container_border_box).add_grid_inspect_data(&rows, &columns);
     }
 
     // 7. Resolve percentage track base sizes
@@ -502,7 +502,7 @@ pub fn compute_grid_layout(tree: &mut impl LayoutPartialTree, node: NodeId, inpu
 
     // If there are not items then return just the container size (no baseline)
     if items.is_empty() {
-        return LayoutOutput::from_outer_size(container_border_box);
+        return LayoutOutput::from_outer_size(container_border_box).add_grid_inspect_data(&rows, &columns);
     }
 
     // Determine the grid container baseline(s) (currently we only compute the first baseline)
@@ -533,4 +533,5 @@ pub fn compute_grid_layout(tree: &mut impl LayoutPartialTree, node: NodeId, inpu
         item_content_size_contribution,
         Point { x: None, y: Some(grid_container_baseline) },
     )
+    .add_grid_inspect_data(&rows, &columns)
 }

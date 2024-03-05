@@ -9,7 +9,7 @@ mod grid_track_counts;
 pub(super) use cell_occupancy::{CellOccupancyMatrix, CellOccupancyState};
 pub(crate) use coordinates::{GridCoordinate, GridLine, OriginZeroLine};
 pub(super) use grid_item::GridItem;
-pub(super) use grid_track::GridTrack;
+pub(crate) use grid_track::GridTrack;
 pub(super) use grid_track_counts::TrackCounts;
 
 #[allow(unused_imports)]

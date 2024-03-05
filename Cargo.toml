@@ -37,6 +37,8 @@ flexbox = []
 grid = ["alloc", "dep:grid"]
 # Causes all algorithms to compute and output a content size for each node
 content_size = []
+# Add inspection data to the LayoutOutput
+inspect = []
 
 ### Taffy Tree
 

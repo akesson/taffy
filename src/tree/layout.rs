@@ -1,8 +1,9 @@
 //! Final data structures that represent the high-level UI layout
+use crate::compute::grid::GridTrack;
 use crate::geometry::{AbsoluteAxis, Line, Point, Rect, Size};
 use crate::style::AvailableSpace;
 use crate::style_helpers::TaffyMaxContent;
-use crate::util::sys::{f32_max, f32_min};
+use crate::util::sys::{f32_max, f32_min, GridTrackVec};
 
 /// Whether we are performing a full layout, or we merely need to size the node
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -145,6 +146,25 @@ impl LayoutInput {
     };
 }
 
+#[cfg(feature = "inspect")]
+/// Inspection data for the layout
+#[derive(Debug, Copy, Clone)]
+pub enum LayoutInspect {
+    /// Grid layout inspection data
+    GridLanes {
+        /// The sizes of the rows
+        rows: [f32; Self::MAX_LANES],
+        /// The sizes of the columns
+        columns: [f32; Self::MAX_LANES],
+    },
+}
+
+#[cfg(feature = "inspect")]
+impl LayoutInspect {
+    /// The maximum number of lanes that are inspected
+    const MAX_LANES: usize = 10;
+}
+
 /// A struct containing the result of laying a single node, which is returned up to the parent node
 ///
 /// A baseline is the line on which text sits. Your node likely has a baseline if it is a text node, or contains
@@ -169,6 +189,10 @@ pub struct LayoutOutput {
     /// Whether margins can be collapsed through this node. This is used for CSS block layout and can
     /// be set to `false` for other layout modes that don't support margin collapsing
     pub margins_can_collapse_through: bool,
+    #[cfg(feature = "inspect")]
+    /// Additional information about the grid layout used for inspecting the resulting
+    /// layout. This is used for debugging and visualization purposes.
+    pub inspect: Option<LayoutInspect>,
 }
 
 impl LayoutOutput {
@@ -181,6 +205,8 @@ impl LayoutOutput {
         top_margin: CollapsibleMarginSet::ZERO,
         bottom_margin: CollapsibleMarginSet::ZERO,
         margins_can_collapse_through: false,
+        #[cfg(feature = "inspect")]
+        inspect: None,
     };
 
     /// Constructor to create a `LayoutOutput` from just the size and baselines
@@ -197,6 +223,8 @@ impl LayoutOutput {
             top_margin: CollapsibleMarginSet::ZERO,
             bottom_margin: CollapsibleMarginSet::ZERO,
             margins_can_collapse_through: false,
+            #[cfg(feature = "inspect")]
+            inspect: None,
         }
     }
 
@@ -209,6 +237,30 @@ impl LayoutOutput {
     pub fn from_outer_size(size: Size<f32>) -> Self {
         Self::from_sizes(size, Size::zero())
     }
+
+    /// Add grid inspection data
+    #[allow(unused_variables, unused_mut)]
+    pub(crate) fn add_grid_inspect_data(
+        mut self,
+        rows: &GridTrackVec<GridTrack>,
+        columns: &GridTrackVec<GridTrack>,
+    ) -> Self {
+        #[cfg(feature = "inspect")]
+        {
+            self.inspect = Some(LayoutInspect::GridLanes { rows: to_sizes(rows), columns: to_sizes(columns) });
+        }
+        self
+    }
+}
+
+/// Convert a GridTrackVec to an array of sizes
+#[cfg(feature = "inspect")]
+fn to_sizes(vec: &GridTrackVec<GridTrack>) -> [f32; 10] {
+    let mut sizes = [f32::MAX; LayoutInspect::MAX_LANES];
+    for (i, track) in vec.iter().take(LayoutInspect::MAX_LANES).enumerate() {
+        sizes[i] = track.base_size;
+    }
+    sizes
 }
 
 /// The final result of a layout algorithm for a single node.

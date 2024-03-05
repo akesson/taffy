@@ -23,7 +23,7 @@ pub use grid_inspect::GridInspect;
 use crate::{util::sys::GridTrackVec, LayoutOutput};
 
 /// Extension trait for adding grid inspection data to the layout output
-pub trait GridInspectExt {
+pub(crate) trait GridInspectExt {
     /// Get the grid inspection data
     fn with_grid_inspect(self, rows: &GridTrackVec<GridTrack>, columns: &GridTrackVec<GridTrack>) -> Self;
 }

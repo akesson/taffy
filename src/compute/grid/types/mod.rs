@@ -1,6 +1,8 @@
 //! Structs and enums that are used within the grid module
 mod cell_occupancy;
 mod coordinates;
+#[cfg(feature = "inspect")]
+mod grid_inspect;
 mod grid_item;
 mod grid_track;
 mod grid_track_counts;
@@ -14,6 +16,29 @@ pub(super) use grid_track_counts::TrackCounts;
 
 #[allow(unused_imports)]
 pub(super) use grid_track::GridTrackKind;
+
+#[cfg(feature = "inspect")]
+pub use grid_inspect::GridInspect;
+
+use crate::{util::sys::GridTrackVec, LayoutOutput};
+
+/// Extension trait for adding grid inspection data to the layout output
+pub trait GridInspectExt {
+    /// Get the grid inspection data
+    fn with_grid_inspect(self, rows: &GridTrackVec<GridTrack>, columns: &GridTrackVec<GridTrack>) -> Self;
+}
+
+impl GridInspectExt for LayoutOutput {
+    /// Attach grid inspect data to the layout output, if the inspect feature is enabled
+    #[allow(unused_variables, unused_mut)]
+    fn with_grid_inspect(mut self, rows: &GridTrackVec<GridTrack>, columns: &GridTrackVec<GridTrack>) -> Self {
+        #[cfg(feature = "inspect")]
+        {
+            self.inspect = Some(crate::LayoutInspect::Grid(GridInspect::new(rows, columns)));
+        }
+        self
+    }
+}
 
 // pub(super) enum GridPosition {
 //     Auto,

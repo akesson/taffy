@@ -19,6 +19,9 @@ use track_sizing::{
 };
 use types::CellOccupancyMatrix;
 
+#[cfg(feature = "inspect")]
+pub(crate) use types::GridInspect;
+pub(crate) use types::GridInspectExt;
 pub(crate) use types::{GridCoordinate, GridLine, GridTrack, OriginZeroLine};
 
 mod alignment;
@@ -229,7 +232,7 @@ pub fn compute_grid_layout(tree: &mut impl LayoutPartialTree, node: NodeId, inpu
 
     // If only the container's size has been requested
     if run_mode == RunMode::ComputeSize {
-        return LayoutOutput::from_outer_size(container_border_box).add_grid_inspect_data(&rows, &columns);
+        return LayoutOutput::from_outer_size(container_border_box).with_grid_inspect(&rows, &columns);
     }
 
     // 7. Resolve percentage track base sizes
@@ -502,7 +505,7 @@ pub fn compute_grid_layout(tree: &mut impl LayoutPartialTree, node: NodeId, inpu
 
     // If there are not items then return just the container size (no baseline)
     if items.is_empty() {
-        return LayoutOutput::from_outer_size(container_border_box).add_grid_inspect_data(&rows, &columns);
+        return LayoutOutput::from_outer_size(container_border_box).with_grid_inspect(&rows, &columns);
     }
 
     // Determine the grid container baseline(s) (currently we only compute the first baseline)
@@ -533,5 +536,5 @@ pub fn compute_grid_layout(tree: &mut impl LayoutPartialTree, node: NodeId, inpu
         item_content_size_contribution,
         Point { x: None, y: Some(grid_container_baseline) },
     )
-    .add_grid_inspect_data(&rows, &columns)
+    .with_grid_inspect(&rows, &columns)
 }
